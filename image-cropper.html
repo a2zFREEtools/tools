@@ -175,14 +175,6 @@
         .dimension-input {
             flex: 1;
             min-width: 120px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dimension-input span {
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            color: #666;
         }
 
         .dimension-input input {
@@ -536,11 +528,9 @@
                         <label for="crop-dimensions">Crop Dimensions (px)</label>
                         <div class="dimension-inputs">
                             <div class="dimension-input">
-                                <span>Width</span>
                                 <input type="number" id="crop-width" placeholder="Width" min="1" disabled>
                             </div>
                             <div class="dimension-input">
-                                <span>Height</span>
                                 <input type="number" id="crop-height" placeholder="Height" min="1" disabled>
                             </div>
                         </div>
@@ -565,21 +555,6 @@
                     </div>
                 </div>
                 
-                <!-- Ad Unit 1 - Placed between crop preview and results -->
-                <div class="ad-unit" style="margin: 20px 0;">
-                    <h3>Advertisement</h3>
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : '8569a407dd5b2e5b8b23b1070d105f2f',
-                            'format' : 'iframe',
-                            'height' : 250,
-                            'width' : 300,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/8569a407dd5b2e5b8b23b1070d105f2f/invoke.js"></script>
-                </div>
-                
                 <div class="preview-container">
                     <div class="image-preview">
                         <h4>Original Image</h4>
@@ -602,22 +577,15 @@
             </div>
             
             <div class="ad-space">
-                <!-- Ad Unit 2 - Sidebar ad 1 -->
                 <div class="ad-unit">
                     <h3>Advertisement</h3>
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : '8569a407dd5b2e5b8b23b1070d105f2f',
-                            'format' : 'iframe',
-                            'height' : 250,
-                            'width' : 300,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.highperformanceformat.com/8569a407dd5b2e5b8b23b1070d105f2f/invoke.js"></script>
+                    <div class="ad-placeholder">
+                        <i class="fas fa-ad"></i>
+                        <p>AdSense Ad Unit</p>
+                        <p>300x250</p>
+                    </div>
                 </div>
                 
-                <!-- Ad Unit 3 - Sidebar ad 2 -->
                 <div class="ad-unit">
                     <h3>Advertisement</h3>
                     <div class="ad-placeholder">
@@ -627,21 +595,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Ad Unit 4 - Below features section -->
-        <div class="ad-unit" style="margin: 40px 0;">
-            <h3>Advertisement</h3>
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '8569a407dd5b2e5b8b23b1070d105f2f',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="//www.highperformanceformat.com/8569a407dd5b2e5b8b23b1070d105f2f/invoke.js"></script>
         </div>
         
         <div class="features">
@@ -1084,5 +1037,13 @@
             });
         });
     </script>
+    
+    <!-- Google AdSense Code (replace with your own Ad Unit IDs) -->
+    <!--
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUBLISHER_ID" crossorigin="anonymous"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    -->
 </body>
 </html>
