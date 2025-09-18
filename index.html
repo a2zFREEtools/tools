@@ -44,7 +44,7 @@
             padding: 15px 0;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
             box-shadow: var(--box-shadow);
         }
 
@@ -69,7 +69,12 @@
         nav ul {
             display: flex;
             list-style: none;
-            gap: 25px;
+            gap: 10px;
+            position: relative;
+        }
+
+        nav > ul > li {
+            position: relative;
         }
 
         nav a {
@@ -77,12 +82,58 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
-            padding: 5px 10px;
+            padding: 10px 15px;
             border-radius: var(--border-radius);
+            display: block;
         }
 
-        nav a:hover {
+        nav > ul > li > a:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            width: 220px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        nav ul li:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            color: var(--dark);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown a:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        .dropdown i {
+            width: 20px;
+            text-align: center;
         }
 
         /* Hero Section */
@@ -387,9 +438,12 @@
             }
 
             nav ul {
-                gap: 15px;
                 flex-wrap: wrap;
                 justify-content: center;
+            }
+            
+            .dropdown {
+                width: 200px;
             }
 
             .hero h1 {
@@ -410,6 +464,25 @@
                 flex-direction: column;
                 text-align: center;
             }
+            
+            nav > ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .dropdown {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                width: 100%;
+                margin-top: 10px;
+                display: none;
+            }
+            
+            nav ul li:hover .dropdown {
+                display: block;
+            }
         }
     </style>
 </head>
@@ -425,8 +498,29 @@
                 <nav>
                     <ul>
                         <li><a href="#">Home</a></li>
-                        <li><a href="#">Image Tools</a></li>
-                        <li><a href="#">PDF Tools</a></li>
+                        
+                        <li>
+                            <a href="#">Image Tools <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown">
+                                <a href="image-compressor.html"><i class="fas fa-compress-arrows-alt"></i> Compressor</a>
+                                <a href="image-resizer.html"><i class="fas fa-expand-arrows-alt"></i> Resizer</a>
+                                <a href="#"><i class="fas fa-exchange-alt"></i> Converter</a>
+                                <a href="#"><i class="fas fa-magic"></i> Enhancer</a>
+                                <a href="#"><i class="fas fa-crop-alt"></i> Cropper</a>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a href="#">PDF Tools <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown">
+                                <a href="#"><i class="fas fa-file-pdf"></i> PDF Compressor</a>
+                                <a href="#"><i class="fas fa-file-alt"></i> PDF Enhancer</a>
+                                <a href="#"><i class="fas fa-lock"></i> PDF Protector</a>
+                                <a href="#"><i class="fas fa-object-group"></i> PDF Merger</a>
+                                <a href="#"><i class="fas fa-crop"></i> PDF Splitter</a>
+                            </div>
+                        </li>
+                        
                         <li><a href="#">Contact</a></li>
                     </ul>
                 </nav>
@@ -440,7 +534,12 @@
             <h1>Your All-in-One Toolkit for Images & PDFs</h1>
             <p>Transform, convert, compress and enhance your files with our powerful yet easy-to-use tools. No installation required - everything works right in your browser!</p>
             
-         
+            <div class="search-box">
+                <input type="text" placeholder="Search for tools...">
+                <button>Search</button>
+            </div>
+        </div>
+    </section>
 
     <!-- Image Tools Section -->
     <div class="container">
@@ -463,7 +562,7 @@
             <!-- Image Tool 2 -->
             <div class="tool-card">
                 <div class="tool-card-header">
-                    <i class="fas fa-crop-alt"></i>
+                    <i class="fas fa-expand-arrows-alt"></i>
                     <h3>Image Resizer</h3>
                 </div>
                 <div class="tool-card-body">
@@ -707,6 +806,21 @@
                     searchInput.value = '';
                 }
             });
+            
+            // Mobile menu functionality
+            const navItems = document.querySelectorAll('nav > ul > li');
+            if (window.innerWidth <= 480) {
+                navItems.forEach(item => {
+                    if (item.querySelector('.dropdown')) {
+                        const link = item.querySelector('a');
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const dropdown = item.querySelector('.dropdown');
+                            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                        });
+                    }
+                });
+            }
         });
     </script>
 </body>
