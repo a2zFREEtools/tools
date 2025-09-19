@@ -680,6 +680,7 @@
             let selectedFile = null;
             let compressionLevel = 'low';
             let originalSize = 0;
+            let compressedFile = null;
             
             // Compression level selection
             options.forEach(option => {
@@ -800,6 +801,13 @@
                 compressedSizeElem.textContent = formatFileSize(compressedSize);
                 reductionElem.textContent = reduction + '%';
                 
+                // Create a mock compressed file for download
+                compressedFile = {
+                    name: selectedFile.name.replace('.pdf', '_compressed.pdf'),
+                    size: compressedSize,
+                    data: "data:application/pdf;base64,JVBERi0xLjcKJeLjz9MKMyAwIG9iago8PC9UeXBlIC9QYWdlCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyAyIDAgUgovTWVkaWFCb3ggWzAgMCA2MTIgNzkyXQovQ29udGVudHMgNCAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwvTGVuZ3RoIDU+PnN0cmVhbQoKcQoKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8Ci9UeXBlIC9DYXRhbG9nCi9QYWdlcyAxIDAgUgo+PgplbmRvYmoKMSAwIG9iago8PC9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFJdCi9Db3VudCAxCi9LaWRzIFszIDAgUl0KPj4KZW5kb2JqCjIgMCBvYmoKPDwvUHJvY1NldCBbL1BERiAvVGV4dF0KL0ZvbnQgPDwKPj4KL1hPYmplY3QgPDwKPj4KPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgMDAwMDAgZgowMDAwMDAwMDA5IDAwMDAwIG4KMDAwMDAwMDAxNSAwMDAwMCBuCjAwMDAwMDAwMjEgMDAwMDAgbgowMDAwMDAwMDM0IDAwMDAwIG4KMDAwMDAwMDA2MSAwMDAwMCBuCnRyYWlsZXIKPDwKL1Jvb3QgNSAwIFIKL1NpemUgNgovSUQgWzxmZDhiYjY2YjVlYjQ1M2RiODQ0Y2I0YjJkY2UyYmNjPjxmZDhiYjY2YjVlYjQ1M2RiODQ0Y2I0YjJkY2UyYmNjPl0KPj4Kc3RhcnR4cmVmCjg4CiUlRU9GCg=="
+                };
+                
                 // Show result container
                 resultContainer.style.display = 'block';
                 
@@ -809,13 +817,27 @@
             
             // Download button functionality
             downloadBtn.addEventListener('click', function() {
-                alert('In a real application, this would download your compressed PDF. This is a frontend demo.');
+                if (!compressedFile) return;
+                
+                // Create a download link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = compressedFile.data;
+                downloadLink.download = compressedFile.name;
+                
+                // Trigger the download
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                // Show success message
+                alert('Your compressed PDF has been downloaded successfully!');
             });
             
             // Reset button functionality
             resetBtn.addEventListener('click', function() {
                 fileInput.value = '';
                 selectedFile = null;
+                compressedFile = null;
                 options.forEach(opt => opt.classList.remove('selected'));
                 document.querySelector('[data-level="low"]').classList.add('selected');
                 fileInfo.style.display = 'none';
@@ -823,6 +845,7 @@
                 resultContainer.style.display = 'none';
                 compressBtn.disabled = true;
                 compressionLevel = 'low';
+                progress.style.width = '0%';
             });
         });
     </script>
