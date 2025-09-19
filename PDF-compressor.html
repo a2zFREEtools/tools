@@ -116,6 +116,12 @@
             background: white;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         .upload-area:hover {
@@ -140,6 +146,14 @@
         }
         
         #file-input {
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8edff;
+            border-radius: 6px;
             display: none;
         }
         
@@ -230,6 +244,75 @@
         
         .btn-secondary:hover {
             background: #e0e8ff;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4e54c8, #8a64d6);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #4e54c8;
+            font-weight: 500;
+        }
+        
+        .result-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .result-container h4 {
+            color: #4e54c8;
+            margin-bottom: 15px;
+        }
+        
+        .result-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .result-item {
+            text-align: center;
+        }
+        
+        .result-item p {
+            color: #777;
+        }
+        
+        .result-item h5 {
+            color: #4e54c8;
+            font-size: 1.2rem;
+        }
+        
+        .download-btn {
+            margin-top: 15px;
         }
         
         .ad-container {
@@ -388,6 +471,11 @@
             .action-buttons {
                 flex-direction: column;
             }
+            
+            .result-info {
+                flex-direction: column;
+                gap: 20px;
+            }
         }
     </style>
 </head>
@@ -421,8 +509,13 @@
                 <div class="upload-area" id="drop-zone">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <h3>Drag & Drop your PDF file here</h3>
-                    <p>or click to browse your files</p>
+                    <p>or click to browse your files (Max: 100MB)</p>
                     <input type="file" id="file-input" accept=".pdf">
+                    <div class="file-info" id="file-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <span id="file-name"></span>
+                        <span id="file-size"></span>
+                    </div>
                 </div>
                 
                 <div class="compression-options">
@@ -443,9 +536,37 @@
                     </div>
                 </div>
                 
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">Processing: 0%</div>
+                </div>
+                
+                <div class="result-container" id="result-container">
+                    <h4>Compression Complete!</h4>
+                    <div class="result-info">
+                        <div class="result-item">
+                            <p>Original Size</p>
+                            <h5 id="original-size">0 KB</h5>
+                        </div>
+                        <div class="result-item">
+                            <p>Compressed Size</p>
+                            <h5 id="compressed-size">0 KB</h5>
+                        </div>
+                        <div class="result-item">
+                            <p>Reduction</p>
+                            <h5 id="reduction">0%</h5>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary download-btn" id="download-btn">
+                        <i class="fas fa-download"></i> Download Compressed PDF
+                    </button>
+                </div>
+                
                 <div class="action-buttons">
-                    <button class="btn btn-primary">Compress PDF</button>
-                    <button class="btn btn-secondary">Reset</button>
+                    <button class="btn btn-primary" id="compress-btn" disabled>Compress PDF</button>
+                    <button class="btn btn-secondary" id="reset-btn">Reset</button>
                 </div>
             </div>
         </section>
@@ -454,7 +575,7 @@
             <div class="ad-placeholder">
                 <i class="fas fa-ad"></i>
                 <p>Ad Space - Google AdSense Unit</p>
-                <p>Ad Unit ID: <code>ca-pub-xxxxxxxxxxxxx</code></p>
+                <p>Ad Unit ID: <code>ca-pub-xxxxxxxxxxxxx/yyyyyyyyyy</code></p>
             </div>
         </div>
 
@@ -489,7 +610,7 @@
             <div class="ad-placeholder">
                 <i class="fas fa-ad"></i>
                 <p>Ad Space - Google AdSense Unit</p>
-                <p>Ad Unit ID: <code>ca-pub-xxxxxxxxxxxxx</code></p>
+                <p>Ad Unit ID: <code>ca-pub-xxxxxxxxxxxxx/yyyyyyyyyy</code></p>
             </div>
         </div>
     </div>
@@ -537,19 +658,39 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Compression level selection
+            // DOM Elements
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
             const options = document.querySelectorAll('.option');
+            const compressBtn = document.getElementById('compress-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progress = document.getElementById('progress');
+            const progressText = document.getElementById('progress-text');
+            const resultContainer = document.getElementById('result-container');
+            const originalSizeElem = document.getElementById('original-size');
+            const compressedSizeElem = document.getElementById('compressed-size');
+            const reductionElem = document.getElementById('reduction');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            // Variables
+            let selectedFile = null;
+            let compressionLevel = 'low';
+            let originalSize = 0;
+            
+            // Compression level selection
             options.forEach(option => {
                 option.addEventListener('click', function() {
                     options.forEach(opt => opt.classList.remove('selected'));
                     this.classList.add('selected');
+                    compressionLevel = this.getAttribute('data-level');
                 });
             });
             
             // File upload handling
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-            
             dropZone.addEventListener('click', function() {
                 fileInput.click();
             });
@@ -571,40 +712,117 @@
                 this.style.backgroundColor = 'white';
                 
                 if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    alert('File selected: ' + e.dataTransfer.files[0].name);
+                    handleFileSelection(e.dataTransfer.files[0]);
                 }
             });
             
             fileInput.addEventListener('change', function() {
                 if (this.files.length) {
-                    alert('File selected: ' + this.files[0].name);
+                    handleFileSelection(this.files[0]);
                 }
             });
             
-            // Compress button functionality
-            const compressBtn = document.querySelector('.btn-primary');
-            compressBtn.addEventListener('click', function() {
-                const selectedOption = document.querySelector('.option.selected');
-                const compressionLevel = selectedOption.getAttribute('data-level');
-                
-                if (!fileInput.files.length) {
-                    alert('Please select a PDF file first.');
+            function handleFileSelection(file) {
+                if (file.type !== 'application/pdf') {
+                    alert('Please select a PDF file.');
                     return;
                 }
                 
-                alert(`Compressing with ${compressionLevel} compression... (This is a demo)`);
+                if (file.size > 100 * 1024 * 1024) { // 100MB limit
+                    alert('File size exceeds the maximum limit of 100MB.');
+                    return;
+                }
                 
-                // In a real application, you would upload the file to a server for processing
-                // and then provide a download link for the compressed file
+                selectedFile = file;
+                originalSize = file.size;
+                
+                // Display file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                
+                // Enable compress button
+                compressBtn.disabled = false;
+                
+                // Hide any previous results
+                resultContainer.style.display = 'none';
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+                else return (bytes / 1048576).toFixed(2) + ' MB';
+            }
+            
+            // Compress button functionality
+            compressBtn.addEventListener('click', function() {
+                if (!selectedFile) return;
+                
+                // Show progress bar
+                progressContainer.style.display = 'block';
+                compressBtn.disabled = true;
+                
+                // Simulate compression process
+                let progressValue = 0;
+                const interval = setInterval(() => {
+                    progressValue += Math.random() * 5;
+                    if (progressValue >= 100) {
+                        progressValue = 100;
+                        clearInterval(interval);
+                        showCompressionResult();
+                    }
+                    
+                    progress.style.width = progressValue + '%';
+                    progressText.textContent = 'Processing: ' + Math.round(progressValue) + '%';
+                }, 100);
+            });
+            
+            function showCompressionResult() {
+                // Calculate compression based on selected level
+                let compressionRatio;
+                switch (compressionLevel) {
+                    case 'low':
+                        compressionRatio = 0.7; // 30% reduction
+                        break;
+                    case 'medium':
+                        compressionRatio = 0.5; // 50% reduction
+                        break;
+                    case 'high':
+                        compressionRatio = 0.3; // 70% reduction
+                        break;
+                }
+                
+                const compressedSize = originalSize * compressionRatio;
+                const reduction = (100 - (compressionRatio * 100)).toFixed(1);
+                
+                // Display results
+                originalSizeElem.textContent = formatFileSize(originalSize);
+                compressedSizeElem.textContent = formatFileSize(compressedSize);
+                reductionElem.textContent = reduction + '%';
+                
+                // Show result container
+                resultContainer.style.display = 'block';
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Download button functionality
+            downloadBtn.addEventListener('click', function() {
+                alert('In a real application, this would download your compressed PDF. This is a frontend demo.');
             });
             
             // Reset button functionality
-            const resetBtn = document.querySelector('.btn-secondary');
             resetBtn.addEventListener('click', function() {
                 fileInput.value = '';
+                selectedFile = null;
                 options.forEach(opt => opt.classList.remove('selected'));
                 document.querySelector('[data-level="low"]').classList.add('selected');
+                fileInfo.style.display = 'none';
+                progressContainer.style.display = 'none';
+                resultContainer.style.display = 'none';
+                compressBtn.disabled = true;
+                compressionLevel = 'low';
             });
         });
     </script>
