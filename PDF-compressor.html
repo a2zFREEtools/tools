@@ -175,33 +175,6 @@
   <p id="fileName" style="margin-top:10px; color:#6b21a8;"></p>
 </div>
 
-    <script>
-  const compression = document.getElementById('compression');
-  const value = document.getElementById('value');
-  const selectBtn = document.getElementById('selectBtn');
-  const upload = document.getElementById('upload');
-  const fileName = document.getElementById('fileName');
-
-  // Update slider % text
-  compression.addEventListener('input', () => {
-    value.textContent = compression.value + '%';
-  });
-
-  // When "Select PDF" button clicked -> trigger hidden input
-  selectBtn.addEventListener('click', () => {
-    upload.click();
-  });
-
-  // Show selected filename
-  upload.addEventListener('change', () => {
-    if (upload.files.length > 0) {
-      fileName.textContent = "Selected: " + upload.files[0].name;
-    } else {
-      fileName.textContent = "";
-    }
-  });
-</script>
-
     
     <div class="slider-container">
       <label for="compression">Compression Level: <span id="value">70%</span></label>
