@@ -9,7 +9,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #4c1d95; /* purple gradient background */
+      background: #4c1d95;
       color: #fff;
       text-align: center;
     }
@@ -72,6 +72,7 @@
 
     .slider-container {
       margin: 20px 0;
+      text-align: left;
     }
     .slider-container input {
       width: 100%;
@@ -161,21 +162,13 @@
     <h2>📄 PDF Compression Tool</h2>
     <div class="upload-box">
       <p>Upload Your PDF</p>
-      <input type="file" id="upload" accept="application/pdf">
-      <br>
-      <button class="btn">Select PDF</button>
+      <!-- Hidden input -->
+      <input type="file" id="upload" accept="application/pdf" style="display:none;">
+      <!-- Button triggers file input -->
+      <button class="btn" id="selectBtn">Select PDF</button>
+      <p id="fileName" style="margin-top:10px; color:#6b21a8;"></p>
     </div>
 
-<div class="upload-box">
-  <p>Upload Your PDF</p>
-  <!-- Hidden input -->
-  <input type="file" id="upload" accept="application/pdf" style="display:none;">
-  <!-- Select button triggers input -->
-  <button class="btn" id="selectBtn">Select PDF</button>
-  <p id="fileName" style="margin-top:10px; color:#6b21a8;"></p>
-</div>
-
-    
     <div class="slider-container">
       <label for="compression">Compression Level: <span id="value">70%</span></label>
       <input type="range" id="compression" min="10" max="100" value="70">
@@ -230,8 +223,41 @@
 <script>
   const compression = document.getElementById('compression');
   const value = document.getElementById('value');
+  const selectBtn = document.getElementById('selectBtn');
+  const upload = document.getElementById('upload');
+  const fileName = document.getElementById('fileName');
+
+  // Update slider % text
   compression.addEventListener('input', () => {
     value.textContent = compression.value + '%';
+  });
+
+  // "Select PDF" button opens file dialog
+  selectBtn.addEventListener('click', () => {
+    upload.click();
+  });
+
+  // Show selected filename
+  upload.addEventListener('change', () => {
+    if (upload.files.length > 0) {
+      fileName.textContent = "Selected: " + upload.files[0].name;
+      // Show original size
+      const file = upload.files[0];
+      document.getElementById('originalSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
+    } else {
+      fileName.textContent = "";
+    }
+  });
+
+  // Dummy Compress button (placeholder)
+  document.getElementById('compressBtn').addEventListener('click', () => {
+    if (upload.files.length === 0) {
+      alert("Please select a PDF first!");
+      return;
+    }
+    document.getElementById('compressedSize').textContent = 
+      (upload.files[0].size / 1024 / 1024 * (compression.value / 100)).toFixed(2) + " MB";
+    alert("PDF compressed (simulation). Real compression logic can be added.");
   });
 </script>
 
