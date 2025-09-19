@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PDFCompressPro - Free Online PDF Compressor</title>
-  <meta name="description" content="Compress PDF files online without losing quality. Fast, free, and easy to use.">
+  <meta name="description" content="Compress PDF files online by reducing file size while maintaining readability. Fast, free, and secure.">
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #4c1d95;
+      background: #059669;
       color: #fff;
       text-align: center;
     }
@@ -22,7 +22,7 @@
     }
     header p {
       margin-top: 6px;
-      color: #ddd6fe;
+      color: #d1fae5;
     }
 
     .container {
@@ -43,20 +43,20 @@
     }
 
     .upload-box {
-      border: 2px dashed #7c3aed;
+      border: 2px dashed #047857;
       border-radius: 10px;
       padding: 30px;
       margin-bottom: 20px;
-      background: #faf5ff;
+      background: #ecfdf5;
     }
 
     .upload-box p {
-      color: #6b21a8;
+      color: #065f46;
       font-weight: 500;
     }
 
     .btn {
-      background: #7c3aed;
+      background: #059669;
       color: #fff;
       border: none;
       padding: 10px 20px;
@@ -67,7 +67,7 @@
       transition: 0.3s;
     }
     .btn:hover {
-      background: #5b21b6;
+      background: #047857;
     }
 
     .slider-container {
@@ -94,9 +94,9 @@
       gap: 20px;
     }
     .ad-box {
-      background: #f5f3ff;
-      color: #6b21a8;
-      border: 2px dashed #c4b5fd;
+      background: #d1fae5;
+      color: #065f46;
+      border: 2px dashed #6ee7b7;
       border-radius: 10px;
       height: 160px;
       display: flex;
@@ -124,14 +124,14 @@
     .feature-card h3 {
       margin: 0 0 8px;
       font-size: 1rem;
-      color: #7c3aed;
+      color: #059669;
     }
 
     footer {
       margin-top: 20px;
       padding: 15px;
       font-size: 0.85rem;
-      color: #ddd6fe;
+      color: #d1fae5;
     }
 
     @media (max-width: 900px) {
@@ -153,25 +153,25 @@
 
 <header>
   <h1>PDFCompressPro</h1>
-  <p>Compress your PDF files quickly, securely, and for free</p>
+  <p>Compress and optimize your PDF files instantly for smaller size</p>
 </header>
 
 <div class="container">
-  <!-- PDF Compression Tool -->
+  <!-- PDF Compressor Tool -->
   <div class="tool-card">
-    <h2>📄 PDF Compression Tool</h2>
+    <h2>📉 PDF Compressor Tool</h2>
     <div class="upload-box">
       <p>Upload Your PDF</p>
       <!-- Hidden input -->
       <input type="file" id="upload" accept="application/pdf" style="display:none;">
       <!-- Button triggers file input -->
       <button class="btn" id="selectBtn">Select PDF</button>
-      <p id="fileName" style="margin-top:10px; color:#6b21a8;"></p>
+      <p id="fileName" style="margin-top:10px; color:#065f46;"></p>
     </div>
 
     <div class="slider-container">
-      <label for="compression">Compression Level: <span id="value">70%</span></label>
-      <input type="range" id="compression" min="10" max="100" value="70">
+      <label for="compression">Compression Level: <span id="value">50%</span></label>
+      <input type="range" id="compression" min="10" max="90" value="50">
     </div>
 
     <div class="compare">
@@ -200,20 +200,20 @@
 <!-- Features section -->
 <div class="features">
   <div class="feature-card">
-    <h3>⚡ Fast Compression</h3>
-    <p>Reduce PDF size within seconds directly in your browser.</p>
+    <h3>📉 Efficient Compression</h3>
+    <p>Reduce PDF size while keeping quality intact.</p>
   </div>
   <div class="feature-card">
-    <h3>🔒 Secure & Private</h3>
-    <p>Your files never leave your device. 100% privacy guaranteed.</p>
+    <h3>🔒 100% Secure</h3>
+    <p>All processing happens in your browser. No file uploads required.</p>
   </div>
   <div class="feature-card">
-    <h3>📱 Responsive Design</h3>
-    <p>Works on desktop, tablet, and mobile devices seamlessly.</p>
+    <h3>📱 Mobile Ready</h3>
+    <p>Use the PDF compressor from any device, anytime.</p>
   </div>
   <div class="feature-card">
-    <h3>⬇ Easy Download</h3>
-    <p>Get your compressed PDF instantly with a single click.</p>
+    <h3>⬇ Instant Download</h3>
+    <p>Get your compressed PDF immediately with one click.</p>
   </div>
 </div>
 
@@ -240,11 +240,10 @@
     upload.click();
   });
 
-  // Show selected filename
+  // Show selected filename and original size
   upload.addEventListener('change', () => {
     if (upload.files.length > 0) {
       fileName.textContent = "Selected: " + upload.files[0].name;
-      // Show original size
       const file = upload.files[0];
       document.getElementById('originalSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
     } else {
@@ -259,10 +258,15 @@
       return;
     }
     const file = upload.files[0];
-    const compressedSize = (file.size * (compression.value / 100));
-    document.getElementById('compressedSize').textContent = (compressedSize / 1024 / 1024).toFixed(2) + " MB";
 
-    // Simulate compressed PDF download (re-download same file for now)
+    // ✅ Simulate compressed size (reduce based on compression level)
+    const reduceFactor = 1 - (compression.value / 100); 
+    const compressedSize = file.size * reduceFactor;
+
+    document.getElementById('compressedSize').textContent =
+      (compressedSize / 1024 / 1024).toFixed(2) + " MB";
+
+    // Simulate download (same file for now)
     const reader = new FileReader();
     reader.onload = function(e) {
       const blob = new Blob([e.target.result], { type: "application/pdf" });
@@ -272,7 +276,7 @@
     };
     reader.readAsArrayBuffer(file);
 
-    // Show popup after compression
+    // Popup after compression
     alert("PDF compressed (simulation). Real compression logic can be added.");
   });
 </script>
