@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PDFCompressPro — Working Simulation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>PDFCompressPro (Fixed)</title>
   <style>
     body { font-family: Arial, sans-serif; background:#1d4ed8; color:#fff; text-align:center; }
     .container { max-width:800px;margin:20px auto;background:#fff;color:#111;padding:20px;border-radius:12px }
@@ -13,7 +13,7 @@
 </head>
 <body>
   <h1>PDFCompressPro</h1>
-  <p>Simulated PDF Compression (downloadable + viewable)</p>
+  <p>Simulated PDF Compression (Now Opens Correctly)</p>
 
   <div class="container">
     <input type="file" id="upload" accept="application/pdf" />
@@ -59,43 +59,26 @@
       }
     });
 
-    function makeValidPdf(targetBytes) {
-      // A tiny valid one-page PDF
-      const basePdf =
-`%PDF-1.4
-1 0 obj <</Type/Catalog/Pages 2 0 R>> endobj
-2 0 obj <</Type/Pages/Count 1/Kids[3 0 R]>> endobj
-3 0 obj <</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>> endobj
-4 0 obj <</Length {LEN}>> stream
-BT /F1 24 Tf 50 150 Td (Hello PDF) Tj ET
-{PADDING}
-endstream endobj
-5 0 obj <</Type/Font/Subtype/Type1/BaseFont/Helvetica>> endobj
-xref
-0 6
-0000000000 65535 f
-trailer <</Root 1 0 R/Size 6>>
-startxref
-{XREF}
-%%EOF`;
+    function createValidPdf(targetBytes) {
+      // बेसिक मिनिमल वैलिड PDF (1 पेज, टेक्स्ट "Hello PDF")
+      const header = "%PDF-1.4\n";
+      const obj1 = "1 0 obj <</Type/Catalog/Pages 2 0 R>> endobj\n";
+      const obj2 = "2 0 obj <</Type/Pages/Count 1/Kids[3 0 R]>> endobj\n";
+      const obj3 = "3 0 obj <</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>> endobj\n";
+      const streamContent = "BT /F1 24 Tf 50 150 Td (Hello PDF) Tj ET ";
+      
+      // Padding inside stream
+      let padding = "X".repeat(Math.max(0, targetBytes - 600)); 
+      const obj4 = `4 0 obj <</Length ${streamContent.length + padding.length}>> stream\n${streamContent}${padding}\nendstream endobj\n`;
+      const obj5 = "5 0 obj <</Type/Font/Subtype/Type1/BaseFont/Helvetica>> endobj\n";
+      
+      let body = obj1 + obj2 + obj3 + obj4 + obj5;
+      let xrefOffset = header.length + body.length;
+      const xref = `xref\n0 6\n0000000000 65535 f \n0000000010 00000 n \n0000000060 00000 n \n0000000120 00000 n \n0000000200 00000 n \n0000000400 00000 n \n`;
+      const trailer = "trailer <</Root 1 0 R/Size 6>>\n";
+      const startxref = "startxref\n" + xrefOffset + "\n%%EOF";
 
-      // Initial content
-      let padding = "";
-      let currentPdf = basePdf.replace("{LEN}", "40").replace("{PADDING}", "");
-      let encoder = new TextEncoder();
-      let bytes = encoder.encode(currentPdf);
-
-      // Add padding until we hit target size
-      let needed = targetBytes - bytes.length;
-      if (needed < 0) needed = 0;
-
-      padding = " ".repeat(needed);
-      let finalPdf = basePdf
-        .replace("{LEN}", (40 + needed).toString())
-        .replace("{PADDING}", padding)
-        .replace("{XREF}", (bytes.length + needed).toString());
-
-      return new Blob([finalPdf], { type: "application/pdf" });
+      return new Blob([header + body + xref + trailer + startxref], { type: "application/pdf" });
     }
 
     compressBtn.addEventListener('click', () => {
@@ -113,7 +96,7 @@ startxref
 
       if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
 
-      const blob = makeValidPdf(targetBytes);
+      const blob = createValidPdf(targetBytes);
       currentObjectUrl = URL.createObjectURL(blob);
 
       const dotIndex = originalFileName.lastIndexOf('.');
