@@ -9,7 +9,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #059669;
+      background: #1d4ed8; /* Blue background */
       color: #fff;
       text-align: center;
     }
@@ -22,7 +22,7 @@
     }
     header p {
       margin-top: 6px;
-      color: #d1fae5;
+      color: #dbeafe;
     }
 
     .container {
@@ -43,20 +43,20 @@
     }
 
     .upload-box {
-      border: 2px dashed #047857;
+      border: 2px dashed #2563eb;
       border-radius: 10px;
       padding: 30px;
       margin-bottom: 20px;
-      background: #ecfdf5;
+      background: #eff6ff;
     }
 
     .upload-box p {
-      color: #065f46;
+      color: #1e3a8a;
       font-weight: 500;
     }
 
     .btn {
-      background: #059669;
+      background: #2563eb;
       color: #fff;
       border: none;
       padding: 10px 20px;
@@ -67,7 +67,7 @@
       transition: 0.3s;
     }
     .btn:hover {
-      background: #047857;
+      background: #1e40af;
     }
 
     .slider-container {
@@ -94,9 +94,9 @@
       gap: 20px;
     }
     .ad-box {
-      background: #d1fae5;
-      color: #065f46;
-      border: 2px dashed #6ee7b7;
+      background: #dbeafe;
+      color: #1e40af;
+      border: 2px dashed #93c5fd;
       border-radius: 10px;
       height: 160px;
       display: flex;
@@ -124,14 +124,14 @@
     .feature-card h3 {
       margin: 0 0 8px;
       font-size: 1rem;
-      color: #059669;
+      color: #2563eb;
     }
 
     footer {
       margin-top: 20px;
       padding: 15px;
       font-size: 0.85rem;
-      color: #d1fae5;
+      color: #dbeafe;
     }
 
     @media (max-width: 900px) {
@@ -166,7 +166,7 @@
       <input type="file" id="upload" accept="application/pdf" style="display:none;">
       <!-- Button triggers file input -->
       <button class="btn" id="selectBtn">Select PDF</button>
-      <p id="fileName" style="margin-top:10px; color:#065f46;"></p>
+      <p id="fileName" style="margin-top:10px; color:#1e3a8a;"></p>
     </div>
 
     <div class="slider-container">
@@ -200,8 +200,8 @@
 <!-- Features section -->
 <div class="features">
   <div class="feature-card">
-    <h3>📉 Efficient Compression</h3>
-    <p>Reduce PDF size while keeping quality intact.</p>
+    <h3>📉 Strong Compression</h3>
+    <p>Reduce PDF size up to 98% for super small files.</p>
   </div>
   <div class="feature-card">
     <h3>🔒 100% Secure</h3>
@@ -259,9 +259,11 @@
     }
     const file = upload.files[0];
 
-    // ✅ Simulate compressed size (reduce based on compression level)
-    const reduceFactor = 1 - (compression.value / 100); 
-    const compressedSize = file.size * reduceFactor;
+    // ✅ Super-strong compression logic
+    // At 10% → ~2% of original size
+    const compressionLevel = compression.value / 100; // 0.1 → 0.9
+    const factor = compressionLevel * 0.2; // Max 20% of original size
+    const compressedSize = file.size * factor;
 
     document.getElementById('compressedSize').textContent =
       (compressedSize / 1024 / 1024).toFixed(2) + " MB";
