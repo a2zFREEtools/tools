@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDFEnhancerPro - Free Online PDF Enhancer</title>
+  <meta name="description" content="Enhance PDF files online by optimizing quality and readability. Fast, free, and easy to use.">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1d4ed8;
+      color: #fff;
+      text-align: center;
+    }
+    header {
+      padding: 20px 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    header p {
+      margin-top: 6px;
+      color: #dbeafe;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      padding: 0 10px;
+    }
+
+    .tool-card {
+      background: #fff;
+      color: #111;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .upload-box {
+      border: 2px dashed #2563eb;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 20px;
+      background: #eff6ff;
+    }
+
+    .upload-box p {
+      color: #1e3a8a;
+      font-weight: 500;
+    }
+
+    .btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #1e40af;
+    }
+
+    .slider-container {
+      margin: 20px 0;
+      text-align: left;
+    }
+    .slider-container input {
+      width: 100%;
+    }
+
+    .compare {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+    .compare div {
+      flex: 1;
+    }
+
+    .ads {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .ad-box {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 2px dashed #93c5fd;
+      border-radius: 10px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin: 30px auto;
+      max-width: 1100px;
+      padding: 0 10px;
+    }
+    .feature-card {
+      background: #fff;
+      color: #111;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .feature-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #2563eb;
+    }
+
+    footer {
+      margin-top: 20px;
+      padding: 15px;
+      font-size: 0.85rem;
+      color: #dbeafe;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .features {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 500px) {
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>PDFEnhancerPro</h1>
+  <p>Enhance and optimize your PDF files instantly for better readability</p>
+</header>
+
+<div class="container">
+  <!-- PDF Enhancer Tool -->
+  <div class="tool-card">
+    <h2>✨ PDF Enhancer Tool</h2>
+    <div class="upload-box">
+      <p>Upload Your PDF</p>
+      <!-- Hidden input -->
+      <input type="file" id="upload" accept="application/pdf" style="display:none;">
+      <!-- Button triggers file input -->
+      <button class="btn" id="selectBtn">Select PDF</button>
+      <p id="fileName" style="margin-top:10px; color:#1e3a8a;"></p>
+    </div>
+
+    <div class="slider-container">
+      <label for="enhancement">Enhancement Level: <span id="value">70%</span></label>
+      <input type="range" id="enhancement" min="10" max="100" value="70">
+    </div>
+
+    <div class="compare">
+      <div>
+        <p>Original PDF</p>
+        <span id="originalSize">--</span>
+      </div>
+      <div>
+        <p>Enhanced PDF</p>
+        <span id="enhancedSize">--</span>
+      </div>
+    </div>
+
+    <button class="btn" id="enhanceBtn">Enhance PDF</button>
+    <br>
+    <a id="downloadLink" class="btn" style="display:none; margin-top:15px;" download="enhanced.pdf">Download PDF</a>
+  </div>
+
+  <!-- Ads section -->
+  <div class="ads">
+    <div class="ad-box">AdSense Ad 300x250</div>
+    <div class="ad-box">AdSense Ad 300x600</div>
+  </div>
+</div>
+
+<!-- Features section -->
+<div class="features">
+  <div class="feature-card">
+    <h3>✨ Smarter Optimization</h3>
+    <p>Enhance embedded images and text for sharper, clearer PDFs.</p>
+  </div>
+  <div class="feature-card">
+    <h3>🔒 100% Secure</h3>
+    <p>All processing happens in your browser. No file uploads required.</p>
+  </div>
+  <div class="feature-card">
+    <h3>📱 Mobile Ready</h3>
+    <p>Use the PDF enhancer from any device, anytime.</p>
+  </div>
+  <div class="feature-card">
+    <h3>⬇ Instant Download</h3>
+    <p>Get your enhanced PDF immediately with one click.</p>
+  </div>
+</div>
+
+<footer>
+  © 2025 PDFEnhancerPro. All rights reserved. <br>
+  Built with HTML5, CSS3, and JavaScript for client-side PDF enhancement.
+</footer>
+
+<script>
+  const enhancement = document.getElementById('enhancement');
+  const value = document.getElementById('value');
+  const selectBtn = document.getElementById('selectBtn');
+  const upload = document.getElementById('upload');
+  const fileName = document.getElementById('fileName');
+  const downloadLink = document.getElementById('downloadLink');
+
+  // Update slider % text
+  enhancement.addEventListener('input', () => {
+    value.textContent = enhancement.value + '%';
+  });
+
+  // "Select PDF" button opens file dialog
+  selectBtn.addEventListener('click', () => {
+    upload.click();
+  });
+
+  // Show selected filename
+  upload.addEventListener('change', () => {
+    if (upload.files.length > 0) {
+      fileName.textContent = "Selected: " + upload.files[0].name;
+      // Show original size
+      const file = upload.files[0];
+      document.getElementById('originalSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
+    } else {
+      fileName.textContent = "";
+    }
+  });
+
+  // Enhance + Download (Simulated)
+  document.getElementById('enhanceBtn').addEventListener('click', () => {
+    if (upload.files.length === 0) {
+      alert("Please select a PDF first!");
+      return;
+    }
+    const file = upload.files[0];
+    const enhancedSize = (file.size * (1 + (enhancement.value / 500))); // simulate slight increase
+    document.getElementById('enhancedSize').textContent = (enhancedSize / 1024 / 1024).toFixed(2) + " MB";
+
+    // Simulate enhanced PDF download (re-download same file for now)
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const blob = new Blob([e.target.result], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.style.display = "inline-block";
+    };
+    reader.readAsArrayBuffer(file);
+
+    // Show popup after enhancement
+    alert("PDF enhanced (simulation). Real enhancement logic can be added.");
+  });
+</script>
+
+</body>
+</html>
