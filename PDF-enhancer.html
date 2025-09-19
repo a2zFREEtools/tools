@@ -240,11 +240,10 @@
     upload.click();
   });
 
-  // Show selected filename
+  // Show selected filename and original size
   upload.addEventListener('change', () => {
     if (upload.files.length > 0) {
       fileName.textContent = "Selected: " + upload.files[0].name;
-      // Show original size
       const file = upload.files[0];
       document.getElementById('originalSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
     } else {
@@ -259,10 +258,15 @@
       return;
     }
     const file = upload.files[0];
-    const enhancedSize = (file.size * (1 + (enhancement.value / 500))); // simulate slight increase
-    document.getElementById('enhancedSize').textContent = (enhancedSize / 1024 / 1024).toFixed(2) + " MB";
 
-    // Simulate enhanced PDF download (re-download same file for now)
+    // ✅ Simulate enhanced size (increase based on enhancement level)
+    const increaseFactor = 1 + (enhancement.value / 200); // e.g. 70% → ~1.35x bigger
+    const enhancedSize = file.size * increaseFactor;
+
+    document.getElementById('enhancedSize').textContent =
+      (enhancedSize / 1024 / 1024).toFixed(2) + " MB";
+
+    // Simulate download (same file for now)
     const reader = new FileReader();
     reader.onload = function(e) {
       const blob = new Blob([e.target.result], { type: "application/pdf" });
@@ -272,7 +276,7 @@
     };
     reader.readAsArrayBuffer(file);
 
-    // Show popup after enhancement
+    // Popup after enhancement
     alert("PDF enhanced (simulation). Real enhancement logic can be added.");
   });
 </script>
