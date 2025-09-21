@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Free Online PDF Compressor - Reduce PDF File Size Instantly</title>
-    <meta name="description" content="Compress your PDF files to a smaller size online for free. Choose your desired compression level and optimize images easily without losing quality.">
-    <meta name="keywords" content="pdf compressor, reduce pdf size, optimize pdf, compress pdf online, free pdf compressor">
+    <title>Functional PDF Compressor - Reduce PDF File Size Instantly</title>
+    <meta name="description" content="Compress your PDF files to a smaller size online for free. This tool actually reduces file size by optimizing JPEG images within the PDF.">
+    <meta name="keywords" content="pdf compressor, reduce pdf size, optimize pdf, compress pdf online, free pdf compressor, functional pdf tool">
     <link rel="canonical" href="https://www.yourwebsite.com/pdf-compressor">
 
     <script type='text/javascript' src='//pl2345678.highcpmgate.com/YOUR_ADSTERRA_HEAD_SCRIPT_ID/invoke.js'></script>
+    
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <style>
         /* Basic Styles */
@@ -19,6 +21,7 @@
             --text-color: #333;
             --border-color: #ddd;
             --success-color: #28a745;
+            --error-color: #dc3545;
         }
 
         * {
@@ -132,11 +135,16 @@
         button:disabled {
             background-color: #a0a0a0;
             cursor: not-allowed;
+            transform: none;
         }
 
         /* Result Section */
         #result-section {
             margin-top: 25px;
+        }
+        
+        #status-heading.error {
+            color: var(--error-color);
         }
 
         .progress-bar-container {
@@ -144,6 +152,7 @@
             background-color: #e0e0e0;
             border-radius: 5px;
             margin: 15px 0;
+            overflow: hidden;
         }
 
         .progress-bar {
@@ -224,11 +233,11 @@
                 </div>
 
                 <div class="options">
-                    <label for="compression-level">Compression Level:</label>
+                    <label for="compression-level">Image Quality:</label>
                     <select id="compression-level">
-                        <option value="low">Low Compression (Good Quality)</option>
-                        <option value="medium" selected>Medium Compression (Balanced)</option>
-                        <option value="high">High Compression (Smaller Size)</option>
+                        <option value="high">High Quality (Less Compression)</option>
+                        <option value="medium" selected>Good Quality (Balanced)</option>
+                        <option value="low">Low Quality (High Compression)</option>
                     </select>
                 </div>
 
@@ -251,23 +260,22 @@
 
         <section class="content-section">
             <h2>How Our PDF Compressor Works</h2>
-            <p>Our tool reduces the file size of your PDFs by optimizing the images within them. By selecting a compression level, you can choose the balance between file size and image quality. The process happens right in your browser, ensuring your files are secure and private.</p>
+            <p>Our tool reduces the file size of your PDFs by optimizing the **JPEG images** within them. By selecting an image quality level, you can choose the balance between file size and image quality. The process happens right in your browser, ensuring your files are secure and private.</p>
 
             <h2>Features</h2>
             <ul>
-                <li><strong>Multiple Compression Levels:</strong> Choose from low, medium, and high compression to meet your needs.</li>
+                <li><strong>Multiple Compression Levels:</strong> Choose from three quality settings for JPEG images.</li>
                 <li><strong>Secure & Private:</strong> All processing is done in your browser. Your files never leave your computer.</li>
                 <li><strong>Completely Free:</strong> Compress as many files as you need, with no limits.</li>
                 <li><strong>User-Friendly Interface:</strong> A simple drag-and-drop interface makes compression effortless.</li>
             </ul>
         </section>
-
     </main>
 
     <footer>
         <p>&copy; 2025 Your Website Name. All rights reserved.</p>
     </footer>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const pdfForm = document.getElementById('pdf-form');
@@ -280,6 +288,7 @@
             const statusMessage = document.getElementById('status-message');
             const progressBar = document.getElementById('progress-bar');
             const downloadLink = document.getElementById('download-link');
+            const compressionLevelSelect = document.getElementById('compression-level');
 
             // Handle file selection via click
             uploadArea.addEventListener('click', () => pdfFileInput.click());
@@ -295,15 +304,12 @@
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, preventDefaults, false);
             });
-
             ['dragenter', 'dragover'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
             });
-
             ['dragleave', 'drop'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
             });
-
             uploadArea.addEventListener('drop', handleDrop, false);
 
             function preventDefaults(e) {
@@ -312,9 +318,9 @@
             }
 
             function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const file = dt.files[0];
+                const file = e.dataTransfer.files[0];
                 if (file && file.type === "application/pdf") {
+                    pdfFileInput.files = e.dataTransfer.files; // Assign dropped file to input
                     handleFile(file);
                 } else {
                     alert("Please drop a PDF file.");
@@ -323,86 +329,131 @@
 
             function handleFile(file) {
                 uploadAreaText.textContent = `Selected File: ${file.name}`;
-                // Re-enable the button if a file is selected
                 compressBtn.disabled = false;
             }
 
-            // Handle form submission
+            // =================================================================
+            // == THE NEW, FUNCTIONAL COMPRESSION LOGIC                      ==
+            // =================================================================
+            async function compressPdf(pdfFile, qualityLevel) {
+                const { PDFDocument } = PDFLib;
+
+                const qualityMap = {
+                    low: 0.5, // Corresponds to Low Quality (High Compression)
+                    medium: 0.75, // Corresponds to Good Quality (Balanced)
+                    high: 0.9, // Corresponds to High Quality (Less Compression)
+                };
+                const quality = qualityMap[qualityLevel];
+
+                const existingPdfBytes = await pdfFile.arrayBuffer();
+                const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+                const imageObjects = pdfDoc.context.indirectObjects.entries();
+                const jpegImages = [];
+                for (const [ref, obj] of imageObjects) {
+                    if (obj.dict?.get(PDFLib.PDFName.of('Subtype')) === PDFLib.PDFName.of('Image')) {
+                        // This logic primarily targets JPEG images as they are most common
+                        jpegImages.push({ ref, obj });
+                    }
+                }
+                
+                if (jpegImages.length === 0) {
+                    throw new Error("No compatible (JPEG) images found to compress in this PDF.");
+                }
+
+                statusMessage.textContent = `Found ${jpegImages.length} image(s) to process...`;
+
+                for (let i = 0; i < jpegImages.length; i++) {
+                    const { ref, obj } = jpegImages[i];
+                    
+                    const imageBytes = obj.getContents();
+                    
+                    // Use browser's native capabilities to re-compress the image
+                    const blob = new Blob([imageBytes], { type: 'image/jpeg' });
+                    const imageUrl = URL.createObjectURL(blob);
+
+                    const image = await new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = reject;
+                        img.src = imageUrl;
+                    });
+                    
+                    URL.revokeObjectURL(imageUrl);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(image, 0, 0);
+
+                    const compressedImageBytes = await new Promise(resolve => {
+                        canvas.toBlob(blob => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(new Uint8Array(reader.result));
+                            reader.readAsArrayBuffer(blob);
+                        }, 'image/jpeg', quality);
+                    });
+
+                    // Replace the old image stream with the new compressed one
+                    obj.contents = compressedImageBytes;
+                    obj.dict.set(PDFLib.PDFName.of('Length'), PDFLib.PDFNumber.of(compressedImageBytes.length));
+                    
+                    // Update progress
+                    const progress = ((i + 1) / jpegImages.length) * 100;
+                    progressBar.style.width = `${progress}%`;
+                }
+
+                const newPdfBytes = await pdfDoc.save();
+                return new Blob([newPdfBytes], { type: 'application/pdf' });
+            }
+
+
             pdfForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
                 const file = pdfFileInput.files[0];
                 if (!file) {
                     alert("Please select a PDF file first.");
                     return;
                 }
 
-                const compressionLevel = document.getElementById('compression-level').value;
-
-                // Show processing state
+                // --- UI SETUP ---
                 resultSection.style.display = 'block';
                 statusHeading.textContent = 'Compressing...';
-                statusMessage.textContent = 'Your file is being optimized. Please wait.';
+                statusHeading.classList.remove('error');
                 downloadLink.style.display = 'none';
                 compressBtn.disabled = true;
                 progressBar.style.width = '0%';
                 
                 try {
-                    // Simulate progress
-                    await updateProgress(40, 500); // 40% in 0.5s
-                    
-                    // =================================================================
-                    // == CORE COMPRESSION LOGIC GOES HERE                           ==
-                    // =================================================================
-                    // In a real application, you would use a library like PDF-LIB.js
-                    // to load the PDF, access its images, compress them using a
-                    // canvas or another image library, and then save the new PDF.
-                    // This is a complex task. The code below SIMULATES the process.
-                    
-                    console.log(`Simulating compression for: ${file.name} with level: ${compressionLevel}`);
-                    
-                    // Simulate the work being done
-                    await updateProgress(80, 1500); // 80% in 1.5s
-                    
-                    // This creates a fake "compressed" file for demonstration purposes.
-                    const fakeCompressedBlob = new Blob(
-                        [`This is a placeholder for the compressed PDF of '${file.name}'.`], 
-                        { type: 'application/pdf' }
-                    );
+                    statusMessage.textContent = 'Loading PDF file... Please wait.';
+                    const originalSize = (file.size / 1024 / 1024).toFixed(2);
 
-                    await updateProgress(100, 500); // 100% in 0.5s
+                    const compressedBlob = await compressPdf(file, compressionLevelSelect.value);
+                    
+                    const compressedSize = (compressedBlob.size / 1024 / 1024).toFixed(2);
+                    const reduction = Math.round(((originalSize - compressedSize) / originalSize) * 100);
 
-                    // Create a download URL for the fake blob
-                    const downloadUrl = URL.createObjectURL(fakeCompressedBlob);
-
-                    // Update UI with success message and download link
+                    const downloadUrl = URL.createObjectURL(compressedBlob);
+                    
+                    // --- UI SUCCESS ---
                     statusHeading.textContent = '✅ Compression Complete!';
-                    statusMessage.textContent = `Your file has been successfully compressed.`;
+                    statusMessage.textContent = `Success! Original size: ${originalSize} MB. New size: ${compressedSize} MB. (Reduced by ${reduction}%)`;
                     downloadLink.href = downloadUrl;
                     downloadLink.download = `compressed_${file.name}`;
                     downloadLink.style.display = 'block';
 
                 } catch (error) {
-                    statusHeading.textContent = '❌ Error!';
-                    statusMessage.textContent = 'Something went wrong during compression. Please try again.';
+                    // --- UI ERROR ---
+                    statusHeading.textContent = '❌ An Error Occurred';
+                    statusHeading.classList.add('error');
+                    statusMessage.textContent = error.message || 'Could not process the PDF. Please try another file.';
                     console.error(error);
                 } finally {
-                    // Re-enable button after process is complete or failed
                     compressBtn.disabled = false;
                 }
             });
-
-            // Helper function to simulate progress updates
-            function updateProgress(width, duration) {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        progressBar.style.width = `${width}%`;
-                        resolve();
-                    }, duration);
-                });
-            }
         });
     </script>
-
 </body>
 </html>
