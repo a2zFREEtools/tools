@@ -333,75 +333,84 @@
             }
 
             // =================================================================
-            // == THE NEW, FUNCTIONAL COMPRESSION LOGIC                      ==
+            // == UPDATED, MORE ROBUST COMPRESSION LOGIC                     ==
             // =================================================================
             async function compressPdf(pdfFile, qualityLevel) {
-                const { PDFDocument } = PDFLib;
+                const { PDFDocument, PDFName } = PDFLib;
 
                 const qualityMap = {
-                    low: 0.5, // Corresponds to Low Quality (High Compression)
-                    medium: 0.75, // Corresponds to Good Quality (Balanced)
-                    high: 0.9, // Corresponds to High Quality (Less Compression)
+                    low: 0.5,
+                    medium: 0.75,
+                    high: 0.9,
                 };
                 const quality = qualityMap[qualityLevel];
 
                 const existingPdfBytes = await pdfFile.arrayBuffer();
                 const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
-                const imageObjects = pdfDoc.context.indirectObjects.entries();
-                const jpegImages = [];
-                for (const [ref, obj] of imageObjects) {
-                    if (obj.dict?.get(PDFLib.PDFName.of('Subtype')) === PDFLib.PDFName.of('Image')) {
-                        // This logic primarily targets JPEG images as they are most common
-                        jpegImages.push({ ref, obj });
+                // **FIX:** Find all image objects first, then filter for JPEGs.
+                const allImageObjects = [];
+                pdfDoc.context.indirectObjects.forEach((pdfObject) => {
+                    if (pdfObject.dict?.get(PDFName.of('Subtype')) === PDFName.of('Image')) {
+                        allImageObjects.push(pdfObject);
                     }
-                }
+                });
                 
-                if (jpegImages.length === 0) {
-                    throw new Error("No compatible (JPEG) images found to compress in this PDF.");
+                // Now, filter those images to find only the JPEGs by checking their encoding filter.
+                const jpegImageObjects = allImageObjects.filter(pdfObject => {
+                    const filter = pdfObject.dict.get(PDFName.of('Filter'));
+                    return filter === PDFName.of('DCTDecode');
+                });
+
+                if (jpegImageObjects.length === 0) {
+                    throw new Error(`This PDF contains ${allImageObjects.length} image(s), but none are compatible JPEGs that can be compressed.`);
                 }
 
-                statusMessage.textContent = `Found ${jpegImages.length} image(s) to process...`;
+                statusMessage.textContent = `Found ${jpegImageObjects.length} JPEG image(s) to process...`;
 
-                for (let i = 0; i < jpegImages.length; i++) {
-                    const { ref, obj } = jpegImages[i];
+                for (let i = 0; i < jpegImageObjects.length; i++) {
+                    const imageObject = jpegImageObjects[i];
+                    const imageBytes = imageObject.getContents();
                     
-                    const imageBytes = obj.getContents();
-                    
-                    // Use browser's native capabilities to re-compress the image
-                    const blob = new Blob([imageBytes], { type: 'image/jpeg' });
-                    const imageUrl = URL.createObjectURL(blob);
+                    try {
+                        // Use browser's native capabilities to re-compress the image
+                        const blob = new Blob([imageBytes], { type: 'image/jpeg' });
+                        const imageUrl = URL.createObjectURL(blob);
 
-                    const image = await new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.onload = () => resolve(img);
-                        img.onerror = reject;
-                        img.src = imageUrl;
-                    });
-                    
-                    URL.revokeObjectURL(imageUrl);
+                        const image = await new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.onload = () => resolve(img);
+                            img.onerror = (err) => reject(new Error('Could not decode an image. It may be corrupt.'));
+                            img.src = imageUrl;
+                        });
+                        
+                        URL.revokeObjectURL(imageUrl);
 
-                    const canvas = document.createElement('canvas');
-                    canvas.width = image.width;
-                    canvas.height = image.height;
-                    const context = canvas.getContext('2d');
-                    context.drawImage(image, 0, 0);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = image.width;
+                        canvas.height = image.height;
+                        const context = canvas.getContext('2d');
+                        context.drawImage(image, 0, 0);
 
-                    const compressedImageBytes = await new Promise(resolve => {
-                        canvas.toBlob(blob => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(new Uint8Array(reader.result));
-                            reader.readAsArrayBuffer(blob);
-                        }, 'image/jpeg', quality);
-                    });
+                        const compressedImageBytes = await new Promise(resolve => {
+                            canvas.toBlob(blob => {
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(new UintArray(reader.result));
+                                reader.readAsArrayBuffer(blob);
+                            }, 'image/jpeg', quality);
+                        });
 
-                    // Replace the old image stream with the new compressed one
-                    obj.contents = compressedImageBytes;
-                    obj.dict.set(PDFLib.PDFName.of('Length'), PDFLib.PDFNumber.of(compressedImageBytes.length));
-                    
-                    // Update progress
-                    const progress = ((i + 1) / jpegImages.length) * 100;
-                    progressBar.style.width = `${progress}%`;
+                        // Replace the old image stream with the new compressed one
+                        imageObject.contents = compressedImageBytes;
+                        imageObject.dict.set(PDFName.of('Length'), PDFLib.PDFNumber.of(compressedImageBytes.length));
+
+                    } catch (e) {
+                        console.warn('Skipping an image that could not be processed:', e);
+                    } finally {
+                         // Update progress regardless of individual image success
+                        const progress = ((i + 1) / jpegImageObjects.length) * 100;
+                        progressBar.style.width = `${progress}%`;
+                    }
                 }
 
                 const newPdfBytes = await pdfDoc.save();
@@ -417,7 +426,6 @@
                     return;
                 }
 
-                // --- UI SETUP ---
                 resultSection.style.display = 'block';
                 statusHeading.textContent = 'Compressing...';
                 statusHeading.classList.remove('error');
@@ -432,19 +440,23 @@
                     const compressedBlob = await compressPdf(file, compressionLevelSelect.value);
                     
                     const compressedSize = (compressedBlob.size / 1024 / 1024).toFixed(2);
-                    const reduction = Math.round(((originalSize - compressedSize) / originalSize) * 100);
+                    const reduction = originalSize > 0 ? Math.round(((originalSize - compressedSize) / originalSize) * 100) : 0;
+
+                    // Handle case where compression makes the file larger (can happen with already optimized images)
+                    if (reduction < 0) {
+                         statusMessage.textContent = `File is already optimized! Original size: ${originalSize} MB. New size: ${compressedSize} MB.`;
+                    } else {
+                         statusMessage.textContent = `Success! Original size: ${originalSize} MB. New size: ${compressedSize} MB. (Reduced by ${reduction}%)`;
+                    }
 
                     const downloadUrl = URL.createObjectURL(compressedBlob);
                     
-                    // --- UI SUCCESS ---
                     statusHeading.textContent = '✅ Compression Complete!';
-                    statusMessage.textContent = `Success! Original size: ${originalSize} MB. New size: ${compressedSize} MB. (Reduced by ${reduction}%)`;
                     downloadLink.href = downloadUrl;
                     downloadLink.download = `compressed_${file.name}`;
                     downloadLink.style.display = 'block';
 
                 } catch (error) {
-                    // --- UI ERROR ---
                     statusHeading.textContent = '❌ An Error Occurred';
                     statusHeading.classList.add('error');
                     statusMessage.textContent = error.message || 'Could not process the PDF. Please try another file.';
