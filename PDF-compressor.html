@@ -4,24 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Functional PDF Compressor - Reduce PDF File Size Instantly</title>
-    <meta name="description" content="Compress your PDF files to a smaller size online for free. This tool actually reduces file size by optimizing JPEG images within the PDF.">
-    <meta name="keywords" content="pdf compressor, reduce pdf size, optimize pdf, compress pdf online, free pdf compressor, functional pdf tool">
+    <title>Working PDF Compressor - Reduce PDF File Size Online</title>
+    <meta name="description" content="A reliable and free online tool to compress your PDF files. Reduces file size by optimizing JPEG images directly in your browser securely and quickly.">
+    <meta name="keywords" content="pdf compressor, reduce pdf size, optimize pdf, compress pdf online, free pdf compressor, working pdf tool">
     <link rel="canonical" href="https://www.yourwebsite.com/pdf-compressor">
 
-    <script type='text/javascript' src='//pl2345678.highcpmgate.com/YOUR_ADSTERRA_HEAD_SCRIPT_ID/invoke.js'></script>
-    
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <style>
-        /* Basic Styles */
+        /* General Styling */
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #f8f9fa;
-            --text-color: #333;
-            --border-color: #ddd;
-            --success-color: #28a745;
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
             --error-color: #dc3545;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-color: #212529;
         }
 
         * {
@@ -31,8 +30,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f4f7f6;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f1f3f5;
             color: var(--text-color);
             line-height: 1.6;
         }
@@ -40,87 +39,98 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem 1rem;
         }
 
         /* Header */
         header {
-            background-color: var(--primary-color);
+            background: linear-gradient(90deg, #0d6efd, #0a58ca);
             color: white;
             text-align: center;
-            padding: 2rem 1rem;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
+            padding: 2.5rem 1rem;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         header h1 {
             margin-bottom: 0.5rem;
+            font-size: 2.5rem;
         }
 
         /* Ad Spaces */
         .ad-space {
-            background-color: #e9ecef;
+            background-color: var(--light-gray);
             border: 2px dashed var(--border-color);
-            margin: 20px 0;
-            padding: 20px;
+            margin: 2rem 0;
+            padding: 1.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 90px;
+            min-height: 100px;
             text-align: center;
-            color: #6c757d;
+            color: var(--secondary-color);
+            border-radius: 8px;
         }
 
-        /* Compressor Tool */
+        /* Main Tool Section */
         .compressor-tool {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             text-align: center;
         }
 
         .upload-area {
             border: 3px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 40px 20px;
+            border-radius: 10px;
+            padding: 3rem 1.5rem;
             cursor: pointer;
             transition: background-color 0.3s, border-color 0.3s;
         }
 
         .upload-area:hover, .upload-area.dragover {
-            background-color: var(--secondary-color);
+            background-color: #e9ecef;
             border-color: var(--primary-color);
         }
 
         .upload-area img {
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
             opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .upload-area p {
+            font-size: 1.1rem;
+            color: #495057;
         }
 
         .options {
-            margin: 20px 0;
+            margin: 1.5rem 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         select#compression-level {
-            padding: 10px;
+            padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1rem;
+            background-color: #fff;
         }
 
         button, .download-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 0.8rem 2rem;
             font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 5px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
             text-decoration: none;
@@ -128,60 +138,64 @@
         }
 
         button:hover, .download-btn:hover {
-            background-color: #0056b3;
+            background-color: #0a58ca;
             transform: translateY(-2px);
         }
 
         button:disabled {
-            background-color: #a0a0a0;
+            background-color: var(--secondary-color);
             cursor: not-allowed;
             transform: none;
         }
 
-        /* Result Section */
+        /* Result & Progress */
         #result-section {
-            margin-top: 25px;
+            margin-top: 2rem;
         }
         
+        #status-heading {
+            font-size: 1.5rem;
+        }
+
         #status-heading.error {
             color: var(--error-color);
         }
 
         .progress-bar-container {
             width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin: 15px 0;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            margin: 1rem 0;
             overflow: hidden;
         }
 
         .progress-bar {
             width: 0%;
-            height: 20px;
-            background-color: var(--success-color);
-            border-radius: 5px;
-            transition: width 0.5s ease-in-out;
+            height: 24px;
+            background: linear-gradient(90deg, #198754, #20c997);
+            border-radius: 8px;
+            transition: width 0.4s ease;
         }
 
         #download-link {
-            margin-top: 20px;
+            margin-top: 1rem;
             background-color: var(--success-color);
         }
         #download-link:hover {
-            background-color: #218838;
+            background-color: #157347;
         }
 
         /* Content Section */
         .content-section {
-            margin-top: 40px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 12px;
         }
 
         .content-section h2 {
             color: var(--primary-color);
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
         }
 
         .content-section ul {
@@ -192,19 +206,21 @@
         /* Footer */
         footer {
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #6c757d;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            color: var(--secondary-color);
         }
 
         /* Responsive Design */
         @media (max-width: 600px) {
             .container {
-                padding: 15px;
+                padding: 1rem 0.5rem;
             }
-            .options {
-                flex-direction: column;
-                gap: 10px;
+            .compressor-tool, .content-section {
+                padding: 1.5rem;
+            }
+            header h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -227,8 +243,8 @@
         <section class="compressor-tool">
             <form id="pdf-form">
                 <div class="upload-area" id="upload-area">
-                    <img src="https://www.svgrepo.com/show/493608/pdf-file.svg" alt="Upload PDF Icon" width="80">
-                    <p><strong>Drag & drop your PDF here</strong> or click to select a file.</p>
+                    <img src="https://www.svgrepo.com/show/508608/upload.svg" alt="Upload Icon" width="60">
+                    <p><strong>Drag & drop your PDF here</strong><br>or click to select a file.</p>
                     <input type="file" id="pdf-file" accept=".pdf" required hidden>
                 </div>
 
@@ -261,7 +277,6 @@
         <section class="content-section">
             <h2>How Our PDF Compressor Works</h2>
             <p>Our tool reduces the file size of your PDFs by optimizing the **JPEG images** within them. By selecting an image quality level, you can choose the balance between file size and image quality. The process happens right in your browser, ensuring your files are secure and private.</p>
-
             <h2>Features</h2>
             <ul>
                 <li><strong>Multiple Compression Levels:</strong> Choose from three quality settings for JPEG images.</li>
@@ -270,6 +285,7 @@
                 <li><strong>User-Friendly Interface:</strong> A simple drag-and-drop interface makes compression effortless.</li>
             </ul>
         </section>
+
     </main>
 
     <footer>
@@ -290,97 +306,121 @@
             const downloadLink = document.getElementById('download-link');
             const compressionLevelSelect = document.getElementById('compression-level');
 
-            // Handle file selection via click
-            uploadArea.addEventListener('click', () => pdfFileInput.click());
+            const setupEventListeners = () => {
+                uploadArea.addEventListener('click', () => pdfFileInput.click());
+                pdfFileInput.addEventListener('change', () => {
+                    if (pdfFileInput.files.length > 0) handleFile(pdfFileInput.files[0]);
+                });
 
-            // Handle file selection via change event
-            pdfFileInput.addEventListener('change', () => {
-                if (pdfFileInput.files.length > 0) {
-                    handleFile(pdfFileInput.files[0]);
-                }
-            });
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                });
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+                });
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+                });
+                uploadArea.addEventListener('drop', handleDrop, false);
 
-            // Handle drag and drop
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
-            });
-            uploadArea.addEventListener('drop', handleDrop, false);
+                pdfForm.addEventListener('submit', handleFormSubmit);
+            };
 
-            function preventDefaults(e) {
+            const preventDefaults = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-            }
+            };
 
-            function handleDrop(e) {
+            const handleDrop = (e) => {
                 const file = e.dataTransfer.files[0];
                 if (file && file.type === "application/pdf") {
-                    pdfFileInput.files = e.dataTransfer.files; // Assign dropped file to input
+                    pdfFileInput.files = e.dataTransfer.files;
                     handleFile(file);
                 } else {
                     alert("Please drop a PDF file.");
                 }
-            }
+            };
 
-            function handleFile(file) {
-                uploadAreaText.textContent = `Selected File: ${file.name}`;
+            const handleFile = (file) => {
+                uploadAreaText.innerHTML = `Selected File: <strong>${file.name}</strong>`;
                 compressBtn.disabled = false;
-            }
+            };
 
-            // =================================================================
-            // == UPDATED, MORE ROBUST COMPRESSION LOGIC                     ==
-            // =================================================================
-            async function compressPdf(pdfFile, qualityLevel) {
+            const setUIState = (state, message = '') => {
+                resultSection.style.display = 'block';
+                statusHeading.classList.remove('error');
+                
+                switch (state) {
+                    case 'processing':
+                        statusHeading.textContent = 'Compressing...';
+                        statusMessage.textContent = 'Loading and analyzing your PDF. Please wait.';
+                        downloadLink.style.display = 'none';
+                        compressBtn.disabled = true;
+                        progressBar.style.width = '0%';
+                        break;
+                    case 'success':
+                        statusHeading.textContent = '✅ Compression Complete!';
+                        statusMessage.innerHTML = message;
+                        downloadLink.style.display = 'inline-block';
+                        compressBtn.disabled = false;
+                        break;
+                    case 'error':
+                        statusHeading.textContent = '❌ An Error Occurred';
+                        statusHeading.classList.add('error');
+                        statusMessage.textContent = message;
+                        downloadLink.style.display = 'none';
+                        compressBtn.disabled = false;
+                        break;
+                }
+            };
+
+            const compressPdf = async (pdfFile, qualityLevel) => {
                 const { PDFDocument, PDFName } = PDFLib;
-
-                const qualityMap = {
-                    low: 0.5,
-                    medium: 0.75,
-                    high: 0.9,
-                };
+                const qualityMap = { low: 0.5, medium: 0.75, high: 0.9 };
                 const quality = qualityMap[qualityLevel];
 
                 const existingPdfBytes = await pdfFile.arrayBuffer();
-                const pdfDoc = await PDFDocument.load(existingPdfBytes);
+                const pdfDoc = await PDFDocument.load(existingPdfBytes, { updateMetadata: false });
 
-                // **FIX:** Find all image objects first, then filter for JPEGs.
-                const allImageObjects = [];
-                pdfDoc.context.indirectObjects.forEach((pdfObject) => {
-                    if (pdfObject.dict?.get(PDFName.of('Subtype')) === PDFName.of('Image')) {
-                        allImageObjects.push(pdfObject);
+                const jpegImageObjects = [];
+                // **FIX:** A more robust way to find image objects
+                const pages = pdfDoc.getPages();
+                for (const page of pages) {
+                    const xObjects = page.node.Resources()?.get(PDFName.of('XObject'))?.asDict();
+                    if (!xObjects) continue;
+
+                    for (const [key, value] of xObjects.entries()) {
+                        const ref = value;
+                        const stream = pdfDoc.context.lookup(ref);
+                        if (stream?.dict.get(PDFName.of('Subtype')) === PDFName.of('Image')) {
+                             if (stream.dict.get(PDFName.of('Filter')) === PDFName.of('DCTDecode')) {
+                                jpegImageObjects.push(stream);
+                            }
+                        }
                     }
-                });
+                }
                 
-                // Now, filter those images to find only the JPEGs by checking their encoding filter.
-                const jpegImageObjects = allImageObjects.filter(pdfObject => {
-                    const filter = pdfObject.dict.get(PDFName.of('Filter'));
-                    return filter === PDFName.of('DCTDecode');
-                });
+                // Remove duplicates that might appear on multiple pages
+                const uniqueJpegObjects = [...new Set(jpegImageObjects)];
 
-                if (jpegImageObjects.length === 0) {
-                    throw new Error(`This PDF contains ${allImageObjects.length} image(s), but none are compatible JPEGs that can be compressed.`);
+                if (uniqueJpegObjects.length === 0) {
+                    throw new Error(`This PDF contains images, but none are standard JPEGs that can be compressed.`);
                 }
 
-                statusMessage.textContent = `Found ${jpegImageObjects.length} JPEG image(s) to process...`;
+                statusMessage.textContent = `Found ${uniqueJpegObjects.length} JPEG image(s). Processing...`;
 
-                for (let i = 0; i < jpegImageObjects.length; i++) {
-                    const imageObject = jpegImageObjects[i];
+                for (let i = 0; i < uniqueJpegObjects.length; i++) {
+                    const imageObject = uniqueJpegObjects[i];
                     const imageBytes = imageObject.getContents();
                     
                     try {
-                        // Use browser's native capabilities to re-compress the image
                         const blob = new Blob([imageBytes], { type: 'image/jpeg' });
                         const imageUrl = URL.createObjectURL(blob);
 
                         const image = await new Promise((resolve, reject) => {
                             const img = new Image();
                             img.onload = () => resolve(img);
-                            img.onerror = (err) => reject(new Error('Could not decode an image. It may be corrupt.'));
+                            img.onerror = reject;
                             img.src = imageUrl;
                         });
                         
@@ -389,83 +429,65 @@
                         const canvas = document.createElement('canvas');
                         canvas.width = image.width;
                         canvas.height = image.height;
-                        const context = canvas.getContext('2d');
-                        context.drawImage(image, 0, 0);
+                        canvas.getContext('2d').drawImage(image, 0, 0);
 
                         const compressedImageBytes = await new Promise(resolve => {
                             canvas.toBlob(blob => {
                                 const reader = new FileReader();
-                                reader.onload = () => resolve(new UintArray(reader.result));
+                                reader.onload = () => resolve(new Uint8Array(reader.result));
                                 reader.readAsArrayBuffer(blob);
                             }, 'image/jpeg', quality);
                         });
 
-                        // Replace the old image stream with the new compressed one
                         imageObject.contents = compressedImageBytes;
                         imageObject.dict.set(PDFName.of('Length'), PDFLib.PDFNumber.of(compressedImageBytes.length));
-
                     } catch (e) {
                         console.warn('Skipping an image that could not be processed:', e);
-                    } finally {
-                         // Update progress regardless of individual image success
-                        const progress = ((i + 1) / jpegImageObjects.length) * 100;
-                        progressBar.style.width = `${progress}%`;
                     }
+                    progressBar.style.width = `${((i + 1) / uniqueJpegObjects.length) * 100}%`;
                 }
 
                 const newPdfBytes = await pdfDoc.save();
                 return new Blob([newPdfBytes], { type: 'application/pdf' });
-            }
+            };
 
-
-            pdfForm.addEventListener('submit', async (e) => {
+            const handleFormSubmit = async (e) => {
                 e.preventDefault();
                 const file = pdfFileInput.files[0];
                 if (!file) {
-                    alert("Please select a PDF file first.");
+                    alert("Please select a file first.");
                     return;
                 }
 
-                resultSection.style.display = 'block';
-                statusHeading.textContent = 'Compressing...';
-                statusHeading.classList.remove('error');
-                downloadLink.style.display = 'none';
-                compressBtn.disabled = true;
-                progressBar.style.width = '0%';
-                
+                setUIState('processing');
+
                 try {
-                    statusMessage.textContent = 'Loading PDF file... Please wait.';
                     const originalSize = (file.size / 1024 / 1024).toFixed(2);
-
                     const compressedBlob = await compressPdf(file, compressionLevelSelect.value);
-                    
                     const compressedSize = (compressedBlob.size / 1024 / 1024).toFixed(2);
-                    const reduction = originalSize > 0 ? Math.round(((originalSize - compressedSize) / originalSize) * 100) : 0;
+                    const reduction = originalSize > 0.01 ? Math.round(((originalSize - compressedSize) / originalSize) * 100) : 0;
 
-                    // Handle case where compression makes the file larger (can happen with already optimized images)
+                    let successMessage;
                     if (reduction < 0) {
-                         statusMessage.textContent = `File is already optimized! Original size: ${originalSize} MB. New size: ${compressedSize} MB.`;
+                        successMessage = `File is already optimized! Original: <strong>${originalSize} MB</strong>. New: <strong>${compressedSize} MB</strong>.`;
                     } else {
-                         statusMessage.textContent = `Success! Original size: ${originalSize} MB. New size: ${compressedSize} MB. (Reduced by ${reduction}%)`;
+                        successMessage = `Original: <strong>${originalSize} MB</strong> &rarr; New: <strong>${compressedSize} MB</strong> (Reduced by ${reduction}%)`;
                     }
-
-                    const downloadUrl = URL.createObjectURL(compressedBlob);
                     
-                    statusHeading.textContent = '✅ Compression Complete!';
+                    const downloadUrl = URL.createObjectURL(compressedBlob);
                     downloadLink.href = downloadUrl;
                     downloadLink.download = `compressed_${file.name}`;
-                    downloadLink.style.display = 'block';
-
+                    
+                    setUIState('success', successMessage);
                 } catch (error) {
-                    statusHeading.textContent = '❌ An Error Occurred';
-                    statusHeading.classList.add('error');
-                    statusMessage.textContent = error.message || 'Could not process the PDF. Please try another file.';
-                    console.error(error);
-                } finally {
-                    compressBtn.disabled = false;
+                    console.error("Compression Error:", error);
+                    setUIState('error', error.message || 'Could not process the PDF. It might be corrupted or password-protected.');
                 }
-            });
+            };
+
+            setupEventListeners();
         });
     </script>
+
 </body>
 </html>
